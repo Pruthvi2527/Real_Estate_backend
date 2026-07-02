@@ -3,16 +3,18 @@ import { MongoServerError } from 'mongodb';
 import { ParsedError } from '../types';
 
 export const isCastError = (
-  error: Error
+  error: unknown
 ): error is mongoose.Error.CastError =>
   error instanceof mongoose.Error.CastError;
 
 export const isMongooseValidationError = (
-  error: Error
+  error: unknown
 ): error is mongoose.Error.ValidationError =>
   error instanceof mongoose.Error.ValidationError;
 
-export const isDuplicateKeyError = (error: Error): error is MongoServerError =>
+export const isDuplicateKeyError = (
+  error: unknown
+): error is MongoServerError =>
   error instanceof MongoServerError && error.code === 11000;
 
 const formatCastError = (error: mongoose.Error.CastError): ParsedError => ({
@@ -21,14 +23,22 @@ const formatCastError = (error: mongoose.Error.CastError): ParsedError => ({
   error: `Invalid ${error.path}: ${String(error.value)}`,
 });
 
+const getValidatorMessage = (
+  err: mongoose.Error.ValidatorError | mongoose.Error.CastError
+): string => {
+  if ('message' in err && typeof err.message === 'string') {
+    return err.message;
+  }
+
+  return 'Validation error';
+};
+
 const formatValidationError = (
   error: mongoose.Error.ValidationError
 ): ParsedError => ({
   statusCode: 400,
   message: 'Validation failed',
-  error: Object.values(error.errors)
-    .map((err) => err.message)
-    .join(', '),
+  error: Object.values(error.errors).map(getValidatorMessage).join(', '),
 });
 
 const formatDuplicateKeyError = (error: MongoServerError): ParsedError => {

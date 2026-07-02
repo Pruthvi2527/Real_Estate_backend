@@ -19,7 +19,7 @@ export const asyncHandler = <
 >(
   handler: AsyncRequestHandler<P, ResBody, ReqBody, ReqQuery>
 ): RequestHandler =>
-  (req, res, next) => {
+  (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(
       handler(req as Request<P, ResBody, ReqBody, ReqQuery>, res, next)
     ).catch(next);
