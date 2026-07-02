@@ -20,9 +20,22 @@ const parsePort = (value: string | undefined): number => {
   return port;
 };
 
+const parseCorsOrigin = (): string | string[] => {
+  const value = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
+
+  if (value.includes(',')) {
+    return value
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean);
+  }
+
+  return value;
+};
+
 export const env = {
   NODE_ENV: process.env.NODE_ENV ?? 'development',
   PORT: parsePort(process.env.PORT),
   MONGODB_URI: getRequiredEnv('MONGODB_URI'),
-  CORS_ORIGIN: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+  CORS_ORIGIN: parseCorsOrigin(),
 } as const;

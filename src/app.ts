@@ -3,7 +3,7 @@ import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { env } from './config/env';
+import { corsOptions } from './config/cors';
 import { errorHandler, notFoundHandler } from './middleware';
 import routes from './routes';
 import propertyRoutes from './routes/property.routes';
@@ -19,12 +19,7 @@ const propertyRateLimiter = rateLimit({
 
 app.use(helmet());
 app.use(compression());
-app.use(
-  cors({
-    origin: env.NODE_ENV === 'development' ? true : env.CORS_ORIGIN,
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '100kb' }));
 
 app.use('/api', routes);
