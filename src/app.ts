@@ -18,7 +18,7 @@ const propertyRateLimiter = rateLimit({
 });
 
 app.use(helmet());
-app.use(compression());
+app.use(compression({ threshold: 1024 }));
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '100kb' }));
 

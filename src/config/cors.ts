@@ -1,20 +1,20 @@
 import type { CorsOptions } from 'cors';
 import { env } from './env';
 
-const getAllowedOrigins = (): string[] => {
+const ALLOWED_ORIGINS = ((): string[] => {
   const configured = Array.isArray(env.CORS_ORIGIN)
     ? env.CORS_ORIGIN
     : [env.CORS_ORIGIN];
 
   return configured;
-};
+})();
 
 const isAllowedOrigin = (origin: string | undefined): boolean => {
   if (!origin) {
     return true;
   }
 
-  if (getAllowedOrigins().includes(origin)) {
+  if (ALLOWED_ORIGINS.includes(origin)) {
     return true;
   }
 

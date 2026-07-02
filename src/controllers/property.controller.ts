@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import * as propertyService from '../services/property.service';
 import { CreatePropertyInput, UpdatePropertyInput } from '../types/property.types';
+import { parsePropertyListQuery } from '../types/pagination.types';
 import { asyncHandler } from '../utils/asyncHandler';
 import { parseRouteParam } from '../utils/parseRouteParam';
-import { sendCreated, sendOk } from '../utils/response';
+import { sendCachedOk, sendCreated, sendOk } from '../utils/response';
 
 type PropertyIdParams = { id: string };
 
@@ -18,10 +19,16 @@ export const createProperty = asyncHandler(
 );
 
 export const getAllProperties = asyncHandler(
-  async (_req: Request, res: Response): Promise<void> => {
-    const properties = await propertyService.getAllProperties();
+  async (req: Request, res: Response): Promise<void> => {
+    const pagination = parsePropertyListQuery(req.query.page, req.query.limit);
+    const result = await propertyService.getAllProperties(pagination ?? undefined);
 
-    sendOk(res, 'Properties fetched successfully', properties);
+    sendCachedOk(
+      res,
+      'Properties fetched successfully',
+      result.properties,
+      result.meta
+    );
   }
 );
 
@@ -31,7 +38,7 @@ export const getPropertyById = asyncHandler(
       parseRouteParam(req.params.id)
     );
 
-    sendOk(res, 'Property fetched successfully', property);
+    sendCachedOk(res, 'Property fetched successfully', property);
   }
 );
 

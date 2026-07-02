@@ -52,7 +52,7 @@ const propertySchema = new Schema<PropertyDocument>(
   }
 );
 
-propertySchema.index({ createdAt: -1 });
+propertySchema.index({ createdAt: -1, _id: -1 });
 propertySchema.index({ location: 1 });
 propertySchema.index({ propertyType: 1 });
 propertySchema.index({ price: 1 });
