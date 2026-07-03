@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { ApiResponse, PaginationMeta, ParsedError } from '../types';
 
-const READ_CACHE_CONTROL = 'private, max-age=30';
+const READ_CACHE_CONTROL = 'private, no-cache, must-revalidate';
 
 const sendSuccess = <T>(
   res: Response,
